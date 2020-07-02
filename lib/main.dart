@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import './question.dart';
-import './answer.dart';
+import './result.dart';
+import './quiz.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,23 +14,48 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   var _questionIndex = 0;
+  var _totalScore = 0;
 
-  var _questions = [
+  final _questions = const [
     {
       'questionText': 'What\'s your favorite color?',
-      'answers': ['Black', 'Blue', 'Orange', 'White'],
+      'answers': [
+        {'text': 'Black', 'score': 10},
+        {'text': 'Blue', 'score': 7},
+        {'text': 'Orange', 'score': 4},
+        {'text': 'White', 'score': 1}
+      ],
     },
     {
       'questionText': 'What\'s your favorite animal?',
-      'answers': ['Lion', 'Rabbit', 'Elephant', 'Dog'],
+      'answers': [
+        {'text': 'Lion', 'score': 10},
+        {'text': 'Rabbit', 'score': 1},
+        {'text': 'Elephant', 'score': 6},
+        {'text': 'Dog', 'score': 3}
+      ],
     },
     {
       'questionText': 'What\'s your Hobby?',
-      'answers': ['Reading', 'Sports', 'Workout', 'PUBG'],
+      'answers': [
+        {'text': 'Reading', 'score': 10},
+        {'text': 'Sports', 'score': 8},
+        {'text': 'Workout', 'score': 5},
+        {'text': 'PUBG', 'score': 3}
+      ],
     },
   ];
 
-  void _answerQuestions() {
+  void _resetQuiz() {
+    setState(() {
+      _questionIndex = 0;
+      _totalScore = 0;
+    });
+  }
+
+  void _answerQuestions(int score) {
+
+    _totalScore+= score;
     setState(() {
       _questionIndex += 1;
     });
@@ -40,21 +65,17 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Quiz App'),
-        ),
-        body: Column(
-          children: <Widget>[
-            Question(_questions[_questionIndex]['questionText']),
-            ...(_questions[_questionIndex]['answers'] as List<String>)
-                .map((answer) {
-              return Answer(_answerQuestions, answer);
-            }).toList(),
-          ],
-        ),
-      ),
-    );
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          appBar: AppBar(
+            title: Text('Quiz App'),
+          ),
+          body: _questionIndex < _questions.length
+              ? Quiz(
+                  answerQuestions: _answerQuestions,
+                  questionIndex: _questionIndex,
+                  questions: _questions)
+              : Result(_totalScore, _resetQuiz),
+        ));
   }
 }
